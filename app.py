@@ -27,11 +27,8 @@ def get_required_env(env_name):
         return os.environ[env_name]
 
 
-# username = 'ucs-win.duke.edu\\ucsmetrics'
 username = get_required_env('PROM_UCS_USERNAME')
-# password = '7DvaAQ!ewFhBAgvY24Z9CJU9'
 password = get_required_env('PROM_UCS_PASSWORD')
-# host = "oit-fe-dscr-ucs01.oit.duke.local"
 host = get_required_env('PROM_UCS_HOST')
 
 collect_increment = os.environ.get('PROM_UCS_INCR', '60s')
