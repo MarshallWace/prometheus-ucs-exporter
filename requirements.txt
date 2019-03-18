@@ -1,4 +1,5 @@
 ucsmsdk
+gunicorn
 prometheus_client
 flask
 humanfriendly

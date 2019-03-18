@@ -1,10 +1,13 @@
-FROM tiangolo/uwsgi-nginx-flask:python3.7
+FROM ubuntu:18.04
 
-COPY ./app.py /app/main.py
+RUN apt -y update && \
+    apt -y install python3-pip
+
+RUN mkdir /app
+COPY ./app.py /app/app.py
 COPY ./requirements.txt /app/
 RUN pip3 install -r /app/requirements.txt
 
-ENV LISTEN_PORT 8080
-EXPOSE 8080
-
 WORKDIR /app
+
+CMD gunicorn app:app -b 127.0.0.1:8080
