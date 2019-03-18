@@ -10,4 +10,6 @@ RUN pip3 install -r /app/requirements.txt
 
 WORKDIR /app
 
-CMD gunicorn app:app -b 127.0.0.1:8080
+HEALTHCHECK CMD curl --fail http://localhost:8080/metrics/ || exit 1
+
+CMD gunicorn app:app -b 0.0.0.0:8080
