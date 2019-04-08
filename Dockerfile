@@ -12,4 +12,4 @@ WORKDIR /app
 
 HEALTHCHECK CMD curl --fail http://localhost:8080/metrics/ || exit 1
 
-CMD ./app.py
+CMD python3 ./app.py
