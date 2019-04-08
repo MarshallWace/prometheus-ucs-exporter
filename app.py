@@ -80,11 +80,11 @@ compute_mb_input_voltage = Gauge(
 
 ether_stats_bytes_rx = Gauge(
     'ether_stats_bytes_rx', 'Ethernet Bytes Total RX',
-    ('pc_label', 'pc_name')
+    ('host', 'pc_label', 'pc_name')
 )
 ether_stats_bytes_tx = Gauge(
     'ether_stats_bytes_tx', 'Ethernet Bytes Total TX',
-    ('pc_label', 'pc_name')
+    ('host', 'pc_label', 'pc_name')
 )
 
 
@@ -151,7 +151,7 @@ def activate_job():
 
                 (_, _, pc_label, pc_name, _) = pieces
                 ether_stats_bytes_rx.labels(
-                    pc_label, pc_name).set(int(item.total_bytes))
+                    host, pc_label, pc_name).set(int(item.total_bytes))
 
             for item in handle.query_classid('etherTxStats'):
                 pieces = item.dn.split('/')
@@ -162,7 +162,7 @@ def activate_job():
 
                 (_, _, pc_label, pc_name, _) = pieces
                 ether_stats_bytes_tx.labels(
-                    pc_label, pc_name).set(int(item.total_bytes))
+                    host, pc_label, pc_name).set(int(item.total_bytes))
 
             # Sleep for increment
             time.sleep(int(collect_increment_seconds))
