@@ -12,4 +12,4 @@ WORKDIR /app
 
 HEALTHCHECK CMD curl --fail http://localhost:8080/metrics/ || exit 1
 
-CMD gunicorn app:app -b 0.0.0.0:8080
+CMD ./app.py

@@ -7,6 +7,7 @@ import sys
 import os
 import threading
 from prometheus_client import Gauge, generate_latest
+from prometheus_client import start_http_server
 import time
 from ucsmsdk.ucshandle import UcsHandle
 if 'PROM_UCS_LISTEN' in os.environ:
@@ -77,6 +78,15 @@ compute_mb_input_voltage = Gauge(
     'compute_mb_input_voltage', 'Input voltage to compute MB',
     list(default_labels.keys()))
 
+ether_stats_bytes_rx = Gauge(
+    'ether_stats_bytes_rx', 'Ethernet Bytes Total RX',
+    ('pc_label', 'pc_name')
+)
+ether_stats_bytes_tx = Gauge(
+    'ether_stats_bytes_tx', 'Ethernet Bytes Total TX',
+    ('pc_label', 'pc_name')
+)
+
 
 @app.before_first_request
 def activate_job():
@@ -132,6 +142,28 @@ def activate_job():
                 vnic_stats_errors_tx.labels(**labels).set(int(
                     item.errors_tx))
 
+            for item in handle.query_classid('etherRxStats'):
+                pieces = item.dn.split('/')
+
+                # We just care about fabric right now
+                if pieces[0] != 'fabric':
+                    continue
+
+                (_, _, pc_label, pc_name, _) = pieces
+                ether_stats_bytes_rx.labels(
+                    pc_label, pc_name).set(int(item.total_bytes))
+
+            for item in handle.query_classid('etherTxStats'):
+                pieces = item.dn.split('/')
+
+                # We just care about fabric right now
+                if pieces[0] != 'fabric':
+                    continue
+
+                (_, _, pc_label, pc_name, _) = pieces
+                ether_stats_bytes_tx.labels(
+                    pc_label, pc_name).set(int(item.total_bytes))
+
             # Sleep for increment
             time.sleep(int(collect_increment_seconds))
 
@@ -145,4 +177,5 @@ def metrics():
 
 
 if __name__ == "__main__":
-    app.run()
+    activate_job()
+    start_http_server(8080)
