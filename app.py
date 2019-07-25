@@ -153,5 +153,5 @@ def metrics():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host=listen)
 # app_dispatch = DispatcherMiddleware(app, {'/metrics': make_wsgi_app()})
