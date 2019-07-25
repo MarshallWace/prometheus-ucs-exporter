@@ -109,7 +109,12 @@ def metrics():
         else:
             (_, labels['rack'], _, labels['cpu'], _) = \
                 item.dn.split("/")
-        processor_env_stats.labels(**labels).set(float(item.temperature))
+        # TODO: Unsure of why this sometimes shows a duplicate entry
+        try:
+            processor_env_stats.labels(**labels).set(float(item.temperature))
+        except Exception as e:
+            logging.debug("Passed on exception: %s" % e)
+            pass
 
     labels = default_labels.copy()
     for item in handle.query_classid('adaptorVnicStats'):
