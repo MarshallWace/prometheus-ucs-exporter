@@ -42,22 +42,20 @@ processor_env_stats = Gauge('processor_env_stats',
 vnic_stats_rx = Gauge('vnic_stats_rx',
                       'HBA Statisitics for VNIC in Bytes Recieved',
                       list(default_labels.keys()) + ['host_fc', 'adaptor'])
-vnic_stats_tx = Gauge('vnic_stats_tx', 'HBA Statisitics for VNIC in Bytes Transmitted',
+vnic_stats_tx = Gauge('vnic_stats_tx',
+                      'HBA Statisitics for VNIC in Bytes Transmitted',
                       list(default_labels.keys()) + ['host_fc', 'adaptor'])
 vnic_stats_packets_rx = Gauge(
-    'vnic_stats_packets_rx',
-    'HBA Statisitics for VNIC in Packets Recieved',
+    'vnic_stats_packets_rx', 'HBA Statisitics for VNIC in Packets Recieved',
     list(default_labels.keys()) + ['host_fc', 'adaptor'])
 vnic_stats_packets_tx = Gauge(
-    'vnic_stats_packets_tx',
-    'HBA Statisitics for VNIC in Packets Transmitted',
+    'vnic_stats_packets_tx', 'HBA Statisitics for VNIC in Packets Transmitted',
     list(default_labels.keys()) + ['host_fc', 'adaptor'])
 vnic_stats_errors_rx = Gauge(
     'vnic_stats_errors_rx', 'HBA Statisitics for VNIC in Errors Recieved',
     list(default_labels.keys()) + ['host_fc', 'adaptor'])
 vnic_stats_errors_tx = Gauge(
-    'vnic_stats_errors_tx',
-    'HBA Statisitics for VNIC in Errors Transmitted',
+    'vnic_stats_errors_tx', 'HBA Statisitics for VNIC in Errors Transmitted',
     list(default_labels.keys()) + ['host_fc', 'adaptor'])
 compute_mb_consumed_power = Gauge('compute_mb_consumed_power',
                                   'Power consumed by compute MB',
@@ -69,11 +67,9 @@ compute_mb_input_voltage = Gauge('compute_mb_input_voltage',
                                  'Input voltage to compute MB',
                                  list(default_labels.keys()))
 
-ether_stats_bytes_rx = Gauge('ether_stats_bytes_rx',
-                             'Ethernet Bytes Total RX',
+ether_stats_bytes_rx = Gauge('ether_stats_bytes_rx', 'Ethernet Bytes Total RX',
                              ('host', 'pc_label', 'pc_name'))
-ether_stats_bytes_tx = Gauge('ether_stats_bytes_tx',
-                             'Ethernet Bytes Total TX',
+ether_stats_bytes_tx = Gauge('ether_stats_bytes_tx', 'Ethernet Bytes Total TX',
                              ('host', 'pc_label', 'pc_name'))
 
 
@@ -159,6 +155,7 @@ def metrics():
         ether_stats_bytes_tx.labels(host, pc_label,
                                     pc_name).set(int(item.total_bytes))
 
+    handle.logout()
     return generate_latest()
 
 
