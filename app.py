@@ -25,10 +25,62 @@ def get_required_env(env_name):
 
 username = get_required_env('PROM_UCS_USERNAME')
 password = get_required_env('PROM_UCS_PASSWORD')
-# host = get_required_env('PROM_UCS_HOST')
 
 # Set up responder API
 app = Flask(__name__)
+
+default_labels = {
+    'host': 'null',
+    'rack': 'null',
+    'chassis': 'null',
+    'blade': 'null'
+}
+
+processor_env_stats = Gauge('processor_env_stats',
+                            'Processor Environmental Stats in Celcious',
+                            list(default_labels.keys()) + ['cpu'])
+vnic_stats_rx = Gauge('vnic_stats_rx',
+                      'HBA Statisitics for VNIC in Bytes Recieved',
+                      list(default_labels.keys()) + ['host_fc', 'adaptor'])
+vnic_stats_tx = Gauge('vnic_stats_tx', 'HBA Statisitics for VNIC in Bytes Transmitted',
+                      list(default_labels.keys()) + ['host_fc', 'adaptor'])
+vnic_stats_packets_rx = Gauge(
+    'vnic_stats_packets_rx',
+    'HBA Statisitics for VNIC in Packets Recieved',
+    list(default_labels.keys()) + ['host_fc', 'adaptor'])
+vnic_stats_packets_tx = Gauge(
+    'vnic_stats_packets_tx',
+    'HBA Statisitics for VNIC in Packets Transmitted',
+    list(default_labels.keys()) + ['host_fc', 'adaptor'])
+vnic_stats_errors_rx = Gauge(
+    'vnic_stats_errors_rx', 'HBA Statisitics for VNIC in Errors Recieved',
+    list(default_labels.keys()) + ['host_fc', 'adaptor'])
+vnic_stats_errors_tx = Gauge(
+    'vnic_stats_errors_tx',
+    'HBA Statisitics for VNIC in Errors Transmitted',
+    list(default_labels.keys()) + ['host_fc', 'adaptor'])
+compute_mb_consumed_power = Gauge('compute_mb_consumed_power',
+                                  'Power consumed by compute MB',
+                                  list(default_labels.keys()))
+compute_mb_input_current = Gauge('compute_mb_input_current',
+                                 'Input current to compute MB',
+                                 list(default_labels.keys()))
+compute_mb_input_voltage = Gauge('compute_mb_input_voltage',
+                                 'Input voltage to compute MB',
+                                 list(default_labels.keys()))
+
+ether_stats_bytes_rx = Gauge('ether_stats_bytes_rx',
+                             'Ethernet Bytes Total RX',
+                             ('host', 'pc_label', 'pc_name'))
+ether_stats_bytes_tx = Gauge('ether_stats_bytes_tx',
+                             'Ethernet Bytes Total TX',
+                             ('host', 'pc_label', 'pc_name'))
+
+
+def setup_labels(host):
+    labels = default_labels.copy()
+    labels['host'] = host
+    return labels
 
 
 @app.route('/metrics/')
@@ -37,57 +89,9 @@ def metrics():
     logging.error(host)
     handle = UcsHandle(host, username, password)
     handle.login()
-
-    default_labels = {
-        'host': host,
-        'rack': 'null',
-        'chassis': 'null',
-        'blade': 'null'
-    }
-    processor_env_stats = Gauge('processor_env_stats',
-                                'Processor Environmental Stats in Celcious',
-                                list(default_labels.keys()) + ['cpu'])
-    vnic_stats_rx = Gauge('vnic_stats_rx',
-                          'HBA Statisitics for VNIC in Bytes Recieved',
-                          list(default_labels.keys()) + ['host_fc', 'adaptor'])
-    vnic_stats_tx = Gauge('vnic_stats_tx',
-                          'HBA Statisitics for VNIC in Bytes Transmitted',
-                          list(default_labels.keys()) + ['host_fc', 'adaptor'])
-    vnic_stats_packets_rx = Gauge(
-        'vnic_stats_packets_rx',
-        'HBA Statisitics for VNIC in Packets Recieved',
-        list(default_labels.keys()) + ['host_fc', 'adaptor'])
-    vnic_stats_packets_tx = Gauge(
-        'vnic_stats_packets_tx',
-        'HBA Statisitics for VNIC in Packets Transmitted',
-        list(default_labels.keys()) + ['host_fc', 'adaptor'])
-    vnic_stats_errors_rx = Gauge(
-        'vnic_stats_errors_rx', 'HBA Statisitics for VNIC in Errors Recieved',
-        list(default_labels.keys()) + ['host_fc', 'adaptor'])
-    vnic_stats_errors_tx = Gauge(
-        'vnic_stats_errors_tx',
-        'HBA Statisitics for VNIC in Errors Transmitted',
-        list(default_labels.keys()) + ['host_fc', 'adaptor'])
-    compute_mb_consumed_power = Gauge('compute_mb_consumed_power',
-                                      'Power consumed by compute MB',
-                                      list(default_labels.keys()))
-    compute_mb_input_current = Gauge('compute_mb_input_current',
-                                     'Input current to compute MB',
-                                     list(default_labels.keys()))
-    compute_mb_input_voltage = Gauge('compute_mb_input_voltage',
-                                     'Input voltage to compute MB',
-                                     list(default_labels.keys()))
-
-    ether_stats_bytes_rx = Gauge('ether_stats_bytes_rx',
-                                 'Ethernet Bytes Total RX',
-                                 ('host', 'pc_label', 'pc_name'))
-    ether_stats_bytes_tx = Gauge('ether_stats_bytes_tx',
-                                 'Ethernet Bytes Total TX',
-                                 ('host', 'pc_label', 'pc_name'))
-
     print("Collecting new metrics")
 
-    labels = default_labels.copy()
+    labels = setup_labels(host)
     for item in handle.query_classid('computeMbPowerStats'):
         if 'chassis' in item.dn:
             (_, labels['chassis'], labels['blade'], _, _) = \
@@ -101,7 +105,7 @@ def metrics():
         compute_mb_input_voltage.labels(**labels).set(float(
             item.input_voltage))
 
-    labels = default_labels.copy()
+    labels = setup_labels(host)
     for item in handle.query_classid('ProcessorEnvStats'):
         if 'chassis' in item.dn:
             (_, labels['chassis'], labels['blade'], _, labels['cpu'],
@@ -113,10 +117,11 @@ def metrics():
         try:
             processor_env_stats.labels(**labels).set(float(item.temperature))
         except Exception as e:
+            logging.debug("%s" % labels)
             logging.debug("Passed on exception: %s" % e)
             pass
 
-    labels = default_labels.copy()
+    labels = setup_labels(host)
     for item in handle.query_classid('adaptorVnicStats'):
         if 'chassis' in item.dn:
             (_, labels['chassis'], labels['blade'],
