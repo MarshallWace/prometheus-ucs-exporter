@@ -1,5 +1,5 @@
-ucsmsdk
-gunicorn
+fastapi
+starlette_exporter
 prometheus_client
-flask
-humanfriendly
+ucsmsdk
+uvicorn

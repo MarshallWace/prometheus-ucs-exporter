@@ -37,9 +37,9 @@ def main():
 
     username = get_required_env('PROM_UCS_USERNAME')
     password = get_required_env('PROM_UCS_PASSWORD')
-    host = get_required_env('PROM_UCS_HOST')
+    domain = get_required_env('PROM_UCS_DOMAIN')
 
-    handle = UcsHandle(host, username, password)
+    handle = UcsHandle(domain, username, password)
     handle.login()
 
     if args.action == 'query-classid':

@@ -5,10 +5,8 @@ services:
     build: .
     container_name: ucs_exporter
     ports:
-      - 80:80
+      - 3001:3001
     environment:
       PROM_UCS_USERNAME: 'foo'
       PROM_UCS_PASSWORD: 'passw0rd'
-      PROM_UCS_HOST: 'my-host.example.com'
-      PROM_UCS_LISTEN: '0.0.0.0'
     restart: on-failure
