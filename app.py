@@ -25,9 +25,6 @@ from ucs.vnic import Vnic
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-username = get_required_env('PROM_UCS_USERNAME')
-password = get_required_env('PROM_UCS_PASSWORD')
-
 app = FastAPI(
     title="ucs-exporter",
     description="Prometheus exporter for Cisco UCSM.",
@@ -48,6 +45,9 @@ def get_required_env(env_name):
         sys.exit(2)
     else:
         return os.environ[env_name]
+
+username = get_required_env('PROM_UCS_USERNAME')
+password = get_required_env('PROM_UCS_PASSWORD')
 
 failure_metric = Counter("ucs_exporter_failure", "Failure counter indicating issues")
 
