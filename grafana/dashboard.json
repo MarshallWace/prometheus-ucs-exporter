@@ -1955,7 +1955,7 @@
           "query": "prometheus",
           "queryValue": "",
           "refresh": 1,
-          "regex": "/openshift-*/",
+          "regex": "",
           "skipUrlSync": false,
           "type": "datasource"
         },
