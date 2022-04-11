@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
+
+# Enables exploring the Cisco UCSM API.
+# Example usage:
+#   * List available classes:
+#     ./scripts/explore.py list-classids
+#   * Fetch data for a class:
+#     ./scripts/explore.py query-classid ProcessorEnvStats
+
 import sys
 import os
 import argparse
 from ucsmsdk.ucshandle import UcsHandle
 from ucsmsdk.ucsconstants import NamingId
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Explore UCS API.")
@@ -32,7 +39,26 @@ def get_required_env(env_name):
 
 
 def main():
+    """
+    Explore the UCSM API.
 
+    This script simply calls the UCSM API using credentials set in the
+    environment to list available classes or fetch data on a given class.
+
+    Parameters
+    ----------
+    action : string
+        list-classids or query-classid <classid>
+
+    Examples
+    --------
+    $ explore.py query-classid ProcessorEnvStats
+    > prints temperature statistics for servers
+
+    See Also
+    --------
+    UCSM SDK: https://github.com/CiscoUcs/ucsmsdk
+    """
     args = parse_args()
 
     username = get_required_env('PROM_UCS_USERNAME')
