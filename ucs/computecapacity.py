@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 2022 Marshall Wace <opensource@mwam.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
 # ComputeCapacity provides data on equipment available/in-use
 # that may be useful for capacity planning.
 from prometheus_client import Gauge

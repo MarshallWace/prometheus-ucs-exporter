@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 2022 Marshall Wace <opensource@mwam.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
 # Collects memory error stats metrics from UCS
 from prometheus_client import Gauge
 from . import utils as u

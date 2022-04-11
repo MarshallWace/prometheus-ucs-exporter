@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 2022 Marshall Wace <opensource@mwam.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
 # Collects fault metrics from UCS
 from collections import defaultdict
 from prometheus_client import Gauge
