@@ -41,3 +41,18 @@ curl http://localhost:3001/metrics?domain=my-domain.example.com
 > Note: Metrics are fetched in a background worker after an initial scrape,
 > since UCSM can be slow to respond.
 > Continue polling the `/metrics` endpoint until metrics are returned.
+
+## Usage
+
+```
+docker pull ghcr.io/marshallwace/prometheus-ucs-exporter:0.0.2
+```
+
+## SPDX update
+
+```
+pip install --user pipx
+
+pipx run reuse addheader --copyright "2022 Marshall Wace <opensource@mwam.com>" --license "GPL-3.0-only" *.py 
+```
+
